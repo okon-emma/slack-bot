@@ -2,8 +2,11 @@ const express = require("express");
 const router = express.Router();
 const axios = require('axios');
 
-router.post("/", async (req, res) => {
-    const { city } = req.body;
+const authenticateToken = require('../middlewares/authMiddleware');
+
+router.post("/", authenticateToken, async (req, res) => {
+    const city = req.body.text;
+    console.log("Content of request body =>>", req.body);
 
     const OPENWM_API_KEY = require("../config").OPENWM_API_KEY;
     const OPENWM_API_URL = require("../config").OPENWM_API_URL;
@@ -12,17 +15,60 @@ router.post("/", async (req, res) => {
 
     try {
         const response = await axios.get(requestURL);
-        console.log(response);
+
+        const name = response.data.name;
+        const temp = response.data.main.temp;
+        const description = response.data.weather[0].description;
+        const wind = response.data.wind.speed;
+        const humidity = response.data.main.humidity;
+
+        // console.log(response);
         res.send({
             success: true,
             status: 200,
             response_type: "ephemeral",
-            text: "Request successful",
+            blocks: [
+                {
+                    "type": "header",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Weather Report for " + name,
+                        "emoji": true
+                    }
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Description:* " + description
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Temperature:* " + temp
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Wind Speed:* " + wind + "m/s"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Humidity:* " + humidity + "%"
+                        }
+                    ]
+                }
+            ]
         });
     } catch (error) {
-        console.log(error);
-        const status = error.response.status || 500;
-        const message = error.response.data.message || error.message || "An error occured";
+        // console.log(error);
+        let status = 500
+        let message = "Internal server error"
+
+        if (error.response) {
+            status = error.response.status;
+            message = error.response.data.message || "An error occured";
+        }
+
         res.send({
             success: false,
             status,
