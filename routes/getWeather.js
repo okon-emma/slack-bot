@@ -3,10 +3,21 @@ const router = express.Router();
 const axios = require('axios');
 
 const authenticateToken = require('../middlewares/authMiddleware');
+const validateCity = require('../utils/validateCity');
 
 router.post("/", authenticateToken, async (req, res) => {
     const city = req.body.text;
     console.log("Content of request body =>>", req.body);
+
+    if (!validateCity(city)) {
+        return res.send({
+            success: false,
+            status: 400,
+            response_type: "ephemeral",
+            text: "Invalid city parameter",
+            error: "Validation failed"
+        });
+    }
 
     const OPENWM_API_KEY = require("../config").OPENWM_API_KEY;
     const OPENWM_API_URL = require("../config").OPENWM_API_URL;
@@ -21,6 +32,8 @@ router.post("/", authenticateToken, async (req, res) => {
         const description = response.data.weather[0].description;
         const wind = response.data.wind.speed;
         const humidity = response.data.main.humidity;
+
+        slack.sendMessage('#test', 'This is a test message!');
 
         // console.log(response);
         res.send({
