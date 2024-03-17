@@ -2,12 +2,13 @@ const express = require("express");
 const router = express.Router();
 const axios = require('axios');
 
-const authenticateToken = require('../middlewares/authMiddleware');
-const validateCity = require('../utils/validateCity');
+const authenticateToken = require('../middlewares/auth');
+const verifySlackSignature = require('../middlewares/authSignature');
 const rateLimiter = require('../middlewares/rateLimiter');
+const validateCity = require('../utils/validateCity');
 
 
-router.post("/", rateLimiter, authenticateToken, async (req, res) => {
+router.post("/", rateLimiter, authenticateToken, verifySlackSignature, async (req, res) => {
     const city = req.body.text;
     console.log("Content of request body =>>", req.body);
 
