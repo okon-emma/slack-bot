@@ -4,8 +4,10 @@ const axios = require('axios');
 
 const authenticateToken = require('../middlewares/authMiddleware');
 const validateCity = require('../utils/validateCity');
+const rateLimiter = require('../middlewares/rateLimiter');
 
-router.post("/", authenticateToken, async (req, res) => {
+
+router.post("/", rateLimiter, authenticateToken, async (req, res) => {
     const city = req.body.text;
     console.log("Content of request body =>>", req.body);
 
