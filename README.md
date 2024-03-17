@@ -88,3 +88,16 @@ The repository contains a `docker-compose.yml` file that fetches its environment
 docker-compose up -d --build
 ```
 This command will build the Docker image and start the container defined in the `docker-compose.yml` file.
+
+
+## Exposing the API
+
+To test your Slack bot application locally and allow Slack to send requests to it, you'll need to expose your local server to the internet. Run the following command in your terminal, replacing `8080` with the port your application is running on:
+ ```
+ngrok http http://localhost:8080
+ ```
+ngrok will generate public HTTTP and HTTP URLs that forwards requests to your local server. You'll see the URLs listed in the ngrok terminal window under the "Forwarding" section. Once you have the ngrok URL, you can use it to configure your Slack app's request URLs. 
+
+### Note
+
+-   Remember that ngrok generates a new URL each time you start it. If you need a consistent URL, you can upgrade to a paid ngrok plan or explore other tunneling solutions.
