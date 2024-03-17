@@ -10,7 +10,7 @@ const validateCity = require('../utils/validateCity');
 
 router.post("/", rateLimiter, authenticateToken, async (req, res) => {
     const city = req.body.text;
-    console.log("Content of request body =>>", req.body);
+    // console.log("Content of request body =>>", req.body);
 
     if (!validateCity(city)) {
         return res.send({
@@ -36,7 +36,7 @@ router.post("/", rateLimiter, authenticateToken, async (req, res) => {
         const wind = response.data.wind.speed;
         const humidity = response.data.main.humidity;
 
-        slack.sendMessage('#test', 'This is a test message!');
+        // slack.sendMessage('#test', 'This is a test message!');
 
         // console.log(response);
         res.send({
